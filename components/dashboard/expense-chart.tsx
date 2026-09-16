@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Transaction } from "@prisma/client";
 import Card from "@/components/ui/card";
 
 function monthLabel(date: Date) {
@@ -15,7 +16,7 @@ export async function ExpenseChart({ userId }: { userId: string }) {
     months.push({ label: monthLabel(start), start, end });
   }
 
-  const transactionWindow = await prisma.transaction.findMany({
+  const transactionWindow: Transaction[] = await prisma.transaction.findMany({
     where: {
       userId,
       date: {
@@ -26,18 +27,24 @@ export async function ExpenseChart({ userId }: { userId: string }) {
 
   const totals = months.map((month) => {
     const monthTransactions = transactionWindow.filter(
-      (transaction) =>
+      (transaction: Transaction) =>
         transaction.date >= month.start && transaction.date < month.end,
     );
 
     return {
       label: month.label,
       income: monthTransactions
-        .filter((transaction) => transaction.type === "INCOME")
-        .reduce((sum, transaction) => sum + transaction.amount, 0),
+        .filter((transaction: Transaction) => transaction.type === "INCOME")
+        .reduce(
+          (sum: number, transaction: Transaction) => sum + transaction.amount,
+          0,
+        ),
       expense: monthTransactions
-        .filter((transaction) => transaction.type === "EXPENSE")
-        .reduce((sum, transaction) => sum + transaction.amount, 0),
+        .filter((transaction: Transaction) => transaction.type === "EXPENSE")
+        .reduce(
+          (sum: number, transaction: Transaction) => sum + transaction.amount,
+          0,
+        ),
     };
   });
 

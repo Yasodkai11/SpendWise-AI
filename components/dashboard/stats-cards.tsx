@@ -1,5 +1,6 @@
 import Card from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
+import type { Transaction } from "@prisma/client";
 import { IconTrendingUp, IconTrendingDown } from "@/components/ui/icons";
 
 const formatCurrency = (value: number) =>
@@ -42,7 +43,7 @@ export function StatCard({ title, value, change, icon, trend }: StatCardProps) {
 }
 
 export async function StatCards({ userId }: { userId: string }) {
-  const transactions = await prisma.transaction.findMany({
+  const transactions: Transaction[] = await prisma.transaction.findMany({
     where: { userId },
     orderBy: { date: "desc" },
   });
@@ -60,35 +61,35 @@ export async function StatCards({ userId }: { userId: string }) {
     1,
   );
 
-  const previousMonthTransactions = transactions.filter((t) => {
+  const previousMonthTransactions = transactions.filter((t: Transaction) => {
     const txDate = new Date(t.date);
     return txDate >= previousMonthStart && txDate < currentMonthStart;
   });
 
-  const currentMonthTransactions = transactions.filter((t) => {
+  const currentMonthTransactions = transactions.filter((t: Transaction) => {
     const txDate = new Date(t.date);
     return txDate >= currentMonthStart;
   });
 
   // Current month
   const currentIncome = currentMonthTransactions
-    .filter((t) => t.type === "INCOME")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((t: Transaction) => t.type === "INCOME")
+    .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
   const currentExpenses = currentMonthTransactions
-    .filter((t) => t.type === "EXPENSE")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((t: Transaction) => t.type === "EXPENSE")
+    .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
   const currentBalance = currentIncome - currentExpenses;
 
   // Previous month
   const previousIncome = previousMonthTransactions
-    .filter((t) => t.type === "INCOME")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((t: Transaction) => t.type === "INCOME")
+    .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
   const previousExpenses = previousMonthTransactions
-    .filter((t) => t.type === "EXPENSE")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((t: Transaction) => t.type === "EXPENSE")
+    .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
   const previousBalance = previousIncome - previousExpenses;
 
@@ -107,16 +108,24 @@ export async function StatCards({ userId }: { userId: string }) {
       : 0;
 
   const allTimeIncome = transactions
-    .filter((t) => t.type === "INCOME")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((t: Transaction) => t.type === "INCOME")
+    .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
   const allTimeExpenses = transactions
-    .filter((t) => t.type === "EXPENSE")
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter((t: Transaction) => t.type === "EXPENSE")
+    .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
   const allTimeBalance = allTimeIncome - allTimeExpenses;
 
-  const cards = [
+  type CardItem = {
+    title: string;
+    value: string;
+    change?: number;
+    trend?: "up" | "down";
+    icon: React.ReactNode;
+  };
+
+  const cards: CardItem[] = [
     {
       title: "Total Balance",
       value: formatCurrency(allTimeBalance),

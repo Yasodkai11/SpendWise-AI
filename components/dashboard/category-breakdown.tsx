@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Transaction } from "@prisma/client";
 import Card from "@/components/ui/card";
 
 const formatCurrency = (value: number) =>

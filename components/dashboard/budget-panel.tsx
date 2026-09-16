@@ -1,5 +1,6 @@
 import { saveBudget } from "@/actions/transactions";
 import Card from "@/components/ui/card";
+import type { Budget } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { prisma } from "@/lib/prisma";
@@ -76,7 +77,10 @@ export default async function BudgetPanel({ userId }: { userId: string }) {
     1,
   );
 
-  const [budgets, spendingByCategory] = await Promise.all([
+  const [budgets, spendingByCategory]: [
+    Budget[],
+    { category: string; _sum: { amount: number | null } }[],
+  ] = await Promise.all([
     prisma.budget.findMany({
       where: {
         userId,

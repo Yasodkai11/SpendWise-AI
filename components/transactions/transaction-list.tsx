@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Transaction } from "@prisma/client";
 import { updateTransaction } from "@/actions/transactions";
 import DeleteTransactionButton from "@/components/transactions/delete-transaction-button";
 import Card from "@/components/ui/card";
@@ -62,7 +63,7 @@ export async function TransactionList({
     }
   }
 
-  const [total, transactions] = await Promise.all([
+  const [total, transactions]: [number, Transaction[]] = await Promise.all([
     prisma.transaction.count({ where }),
     prisma.transaction.findMany({
       where,

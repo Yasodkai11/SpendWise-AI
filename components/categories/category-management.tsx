@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Category } from "@prisma/client";
 import Card from "@/components/ui/card";
 import {
   addCategory,
@@ -11,7 +12,7 @@ export default async function CategoryManagement({
 }: {
   userId: string;
 }) {
-  const categories = await prisma.category.findMany({
+  const categories: Category[] = await prisma.category.findMany({
     where: { userId },
     orderBy: { name: "asc" },
   });
