@@ -116,7 +116,15 @@ export async function StatCards({ userId }: { userId: string }) {
 
   const allTimeBalance = allTimeIncome - allTimeExpenses;
 
-  const cards = [
+  type CardItem = {
+    title: string;
+    value: string;
+    change?: number;
+    trend?: "up" | "down";
+    icon: React.ReactNode;
+  };
+
+  const cards: CardItem[] = [
     {
       title: "Total Balance",
       value: formatCurrency(allTimeBalance),
